@@ -14,8 +14,8 @@ import org.opengis.referencing.operation.CoordinateOperation;
 import org.opengis.util.FactoryException;
 
 // Implementation-dependent
-import org.osgeo.proj.Proj;
-import tech.uom.seshat.Units;
+import org.apache.sis.measure.Units;
+import org.apache.sis.referencing.CRS;
 
 
 /**
@@ -38,9 +38,10 @@ public class Services {
      *
      * @param  authority  the desired authority, for example "EPSG".
      * @return a factory for creating CRS objects.
+     * @throws FactoryException if the factory is not available.
      */
-    public static CRSAuthorityFactory getAuthorityFactory(String authority) {
-        return Proj.getAuthorityFactory(authority);
+    public static CRSAuthorityFactory getAuthorityFactory(String authority) throws FactoryException {
+        return CRS.getAuthorityFactory(authority);
     }
 
     /**
@@ -54,7 +55,7 @@ public class Services {
     public static CoordinateOperation findOperation(CoordinateReferenceSystem sourceCRS,
                                                     CoordinateReferenceSystem targetCRS) throws FactoryException
     {
-        return Proj.createCoordinateOperation(sourceCRS, targetCRS, null);
+        return CRS.findOperation(sourceCRS, targetCRS, null);
     }
 
     public static Unit<Length> metreUnit()    {return Units.METRE;}
