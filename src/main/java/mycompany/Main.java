@@ -4,6 +4,7 @@
 package mycompany;
 
 // Implementation-neutral
+import javax.measure.IncommensurableException;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
 
@@ -17,7 +18,7 @@ public class Main {
         System.out.println("The application main class.");
         try {
             Referencing.printCityLocations();
-        } catch (FactoryException | TransformException e) {
+        } catch (FactoryException | TransformException | IncommensurableException e) {
             System.err.println("Coordinate operation failed.");
             e.printStackTrace();
         }

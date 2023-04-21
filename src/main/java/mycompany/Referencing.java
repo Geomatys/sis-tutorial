@@ -7,6 +7,8 @@ import mycompany.geospatial.Services;
 
 // Implementation-neutral
 import javax.measure.Unit;
+import javax.measure.UnitConverter;
+import javax.measure.IncommensurableException;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
@@ -29,8 +31,9 @@ class Referencing {
      *
      * @throws FactoryException if a CRS or coordinate operation can not be created.
      * @throws TransformException if a point can not be transformed.
+     * @throws IncommensurableException if a unit of measurement can not be converted.
      */
-    static void printCityLocations() throws FactoryException, TransformException {
+    static void printCityLocations() throws FactoryException, TransformException, IncommensurableException {
         CRSAuthorityFactory factory = Services.getAuthorityFactory("EPSG");
         GeographicCRS sourceCRS = factory.createGeographicCRS("4326");
         ProjectedCRS  targetCRS = factory.createProjectedCRS ("3395");
@@ -81,6 +84,32 @@ class Referencing {
                     coordinates[i*numDimensions  ], xUnit,
                     coordinates[i*numDimensions+1], yUnit);
         }
+        /*
+         * Show again the same coordinates, but with a different unit of measurement.
+         * For making this test simpler, we assume that both axes use the same units.
+         * But a more robust code would use an `UnitConverter` for each axis.
+         */
+        assert xUnit.equals(yUnit) : "This tutorial assumes same unit for X and Y axes.";
+        UnitConverter uc = xUnit.getConverterToAny(Services.mileUnit());
+        for (int i=0; i<coordinates.length; i++) {
+            coordinates[i] = uc.convert(coordinates[i]);
+        }
+        System.out.println();
+        System.out.println("After unit conversion:");
+        for (int i=0; i<numPoints; i++) {
+            System.out.printf("City location: %6.0f %s, %5.0f %s%n",
+                    coordinates[i*numDimensions  ], Services.mileUnit(),
+                    coordinates[i*numDimensions+1], Services.mileUnit());
+        }
+        /*
+         * Bonus: demonstration of some Seshat capabilities for unit operations.
+         */
+        System.out.println();
+        System.out.println("Unit operations:");
+        System.out.printf("metres × 1000 = %s%n", Services.metreUnit().multiply(1000));
+        System.out.printf("kg × m/s² = %s%n",
+                Services.kilogramUnit().multiply(Services.metreUnit())
+                        .divide(Services.secondUnit().pow(2)));
     }
 
     private static void printGeographicExtent(Extent domain) {

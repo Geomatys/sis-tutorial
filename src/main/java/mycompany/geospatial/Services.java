@@ -4,6 +4,10 @@
 package mycompany.geospatial;
 
 // Implementation-neutral
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
+import javax.measure.quantity.Mass;
+import javax.measure.quantity.Time;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.CoordinateOperation;
@@ -11,6 +15,7 @@ import org.opengis.util.FactoryException;
 
 // Implementation-dependent
 import org.osgeo.proj.Proj;
+import tech.uom.seshat.Units;
 
 
 /**
@@ -51,4 +56,9 @@ public class Services {
     {
         return Proj.createCoordinateOperation(sourceCRS, targetCRS, null);
     }
+
+    public static Unit<Length> metreUnit()    {return Units.METRE;}
+    public static Unit<Mass>   kilogramUnit() {return Units.KILOGRAM;}
+    public static Unit<Time>   secondUnit()   {return Units.SECOND;}
+    public static Unit<Length> mileUnit()     {return Units.STATUTE_MILE;}
 }
