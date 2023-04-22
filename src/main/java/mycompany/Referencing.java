@@ -9,6 +9,7 @@ import mycompany.geospatial.Services;
 import javax.measure.Unit;
 import javax.measure.UnitConverter;
 import javax.measure.IncommensurableException;
+import org.opengis.geometry.Envelope;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
@@ -122,5 +123,61 @@ class Referencing {
                 System.out.printf("- East bound longitude: %6.1f°%n", bbox.getEastBoundLongitude());
             }
         }
+    }
+
+    /**
+     * Prints the result of projecting an envelope.
+     *
+     * @param  args  ignored.
+     * @throws FactoryException   if an error occurred while creating a Coordinate Reference System (CRS).
+     * @throws TransformException if an error occurred while transforming coordinates to the target CRS.
+     */
+    static void printEnvelopeProjection() throws FactoryException, TransformException {
+        CRSAuthorityFactory factory = Services.getAuthorityFactory("EPSG");
+        GeographicCRS sourceCRS = factory.createGeographicCRS("4326");              // WGS 84
+        ProjectedCRS  targetCRS = factory.createProjectedCRS ("5041");              // Polar stereographic.
+        Envelope      sourceEnv = Services.envelope(sourceCRS, 84, -20, 88, 50);    // (lower, upper).
+        Envelope      targetEnv = Services.transform(sourceEnv, targetCRS);
+        Envelope      corners   = transformCorners(sourceEnv, Services.findOperation(sourceCRS, targetCRS));
+
+        System.out.println();
+        System.out.println("Comparaison of envelope transformations");
+        System.out.printf("Source:  %s%n", sourceEnv);
+        System.out.printf("Target:  %s%n", targetEnv);
+        System.out.printf("Corners: %s%n", corners);
+        System.out.printf("Errors on Y axis when using corners: %6.3f kilometres.%n",
+                          (corners.getMinimum(1) - targetEnv.getMinimum(1)) / 1000);
+    }
+
+    /**
+     * Transforms the 4 corners of a two-dimensional envelope. This is not recommended.
+     * This method is provided only for demonstrating that this approach is not sufficient.
+     *
+     * @param  bbox       the bounding box to transform.
+     * @param  operation  the coordinate operation to use for transforming corners.
+     * @return the result of transforming the 4 corners of the provided bounding box.
+     * @throws TransformException if a coordinate cannot be converted.
+     */
+    private static Envelope transformCorners(Envelope bbox, CoordinateOperation operation) throws TransformException {
+        double[] corners = {
+            bbox.getMinimum(0), bbox.getMinimum(1),
+            bbox.getMaximum(0), bbox.getMinimum(1),
+            bbox.getMaximum(0), bbox.getMaximum(1),
+            bbox.getMinimum(0), bbox.getMaximum(1)
+        };
+        operation.getMathTransform().transform(corners, 0, corners, 0, 4);
+        double xmin = Double.POSITIVE_INFINITY;
+        double ymin = Double.POSITIVE_INFINITY;
+        double xmax = Double.NEGATIVE_INFINITY;
+        double ymax = Double.NEGATIVE_INFINITY;
+        for (int i=0; i<corners.length;) {
+            final double x = corners[i++];
+            final double y = corners[i++];
+            xmin = Math.min(xmin, x);
+            xmax = Math.max(xmax, x);
+            ymin = Math.min(ymin, y);
+            ymax = Math.max(ymax, y);
+        }
+        return Services.envelope(operation.getTargetCRS(), xmin, ymin, xmax, ymax);
     }
 }

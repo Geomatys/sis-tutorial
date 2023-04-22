@@ -18,6 +18,7 @@ public class Main {
         System.out.println("The application main class.");
         try {
             Referencing.printCityLocations();
+            Referencing.printEnvelopeProjection();
         } catch (FactoryException | TransformException | IncommensurableException e) {
             System.err.println("Coordinate operation failed.");
             e.printStackTrace();
