@@ -1,0 +1,16 @@
+#
+# Moving Feature file format:
+# https://docs.ogc.org/is/14-084r2/14-084r2.html
+#
+# KNOWN LIMITATION:
+# The CRS declared on the first header line should be "urn:ogc:def:crs:TB18-D025::VoyagerCRS",
+# but Apache SIS does not yet have a mechanism for referring to definitions using the identifiers
+# found in the GML file. For now we cheat by specifying EPSG::4979.
+#
+# This file contains random values. There is no realistic transformation here.
+#
+@stboundedby, urn:ogc:def:crs:EPSG::4979, 3D, -37.524474 289.911611 19695916300, -37.524474 289.911611 19695917500, 2022-10-31T18:52:00Z, 2022-10-31T19:00:00Z, absolute
+@columns, mfidref, trajectory, yaw,xsd:decimal, pitch,xsd:decimal, roll,xsd:decimal
+Voyager, 2022-10-31T18:53:00Z, 2022-10-31T18:54:00Z, -37.524474 289.911611 19695916300, 10, 5, 20
+Voyager, 2022-10-31T18:54:00Z, 2022-10-31T18:55:00Z, -37.524474 289.911611 19695916800, 10, 4, 21
+Voyager, 2022-10-31T18:55:00Z, 2022-10-31T18:56:00Z, -37.524474 289.911611 19695917500, 10, 5, 20

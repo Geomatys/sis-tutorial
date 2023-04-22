@@ -1,0 +1,5 @@
+#
+# This file declares the operation methods to add to Apache SIS.
+# This is not a committed API!
+#
+mycompany.geospatial.internal.TrajectoryToECEF

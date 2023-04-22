@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:ConcatenatedOperation xsi:schemaLocation = "http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"
+                           xmlns:gml          = "http://www.opengis.net/gml/3.2"
+                           xmlns:xsi          = "http://www.w3.org/2001/XMLSchema-instance"
+                           xmlns:xlink        = "http://www.w3.org/1999/xlink"
+                           gml:id             = "VoyagerToObservatory">
+  <!--
+    This GML file implements a scenario where an object observed from the CRS of a Voyager spacecraft
+    has its coordinates transformed to the CRS of the platform of an hypothetical observatory.
+    The operation methods and parameter values in this file are not real;
+    they were invented for OGC TestBed 18.
+
+    For every objects defined in this document, <gml:identifier> can be seen as the primary key to use
+    for fetching the object in a database. For example, if the code space is "IOGP" or "EPSG", then the
+    identifier is a primary key in EPSG geodetic dataset. For example in "urn:ogc:def:method:EPSG::9837",
+    primary key is "9837" and the table where to look for that primary key is "epsg_coordoperationmethod".
+    By contrast, gml:id attributes are local to this document and can be anything. They are used for xlink.
+  -->
+  <gml:identifier codeSpace="TB18-D025">VoyagerToObservatory</gml:identifier>
+  <gml:name>Voyager spacecraft to Observatory platform</gml:name>
+  <gml:scope>Example.</gml:scope>
+  <gml:operationVersion>1</gml:operationVersion>
+  <!--
+    The source of this transformation is an engineering CRS attached to the Voyager spacecraft.
+    A temporal CRS is added to the engineering CRS, thus creating a CRS with (x,y,z,t) axes.
+  -->
+  <gml:sourceCRS>
+    <gml:CompoundCRS gml:id="VoyagerAndTimeCRS">
+      <gml:identifier codeSpace="TB18-D025">VoyagerAndTimeCRS</gml:identifier>
+      <gml:name>Voyager CRS + time</gml:name>
+      <gml:scope>Example.</gml:scope>
+      <gml:componentReferenceSystem>
+        <gml:EngineeringCRS gml:id="VoyagerCRS">
+          <gml:identifier codeSpace="TB18-D025">VoyagerCRS</gml:identifier>
+          <gml:name>A spacecraft-centred CRS for Voyager</gml:name>
+          <gml:scope>Example.</gml:scope>
+          <gml:cartesianCS>
+            <gml:CartesianCS gml:id="VoyagerCS">
+              <gml:identifier codeSpace="TB18-D025">VoyagerCS</gml:identifier>
+              <gml:name>Spacecraft coordinate system</gml:name>
+              <gml:axis>
+                <gml:CoordinateSystemAxis uom="urn:ogc:def:uom:EPSG::9001" gml:id="VoyagerAxisForward">
+                  <gml:identifier codeSpace="TB18-D025">VoyagerAxisForward</gml:identifier>
+                  <gml:name>Forward</gml:name>
+                  <gml:axisAbbrev>x</gml:axisAbbrev>
+                  <gml:axisDirection codeSpace="ISO">forward</gml:axisDirection>
+                </gml:CoordinateSystemAxis>
+              </gml:axis>
+              <gml:axis>
+                <gml:CoordinateSystemAxis uom="urn:ogc:def:uom:EPSG::9001" gml:id="VoyagerAxisStarboard">
+                  <gml:identifier codeSpace="TB18-D025">VoyagerAxisStarboard</gml:identifier>
+                  <gml:name>Sideward</gml:name>
+                  <gml:axisAbbrev>y</gml:axisAbbrev>
+                  <gml:axisDirection codeSpace="ISO">starboard</gml:axisDirection> <!-- Not well defined in this example. -->
+                </gml:CoordinateSystemAxis>
+              </gml:axis>
+              <gml:axis>
+                <gml:CoordinateSystemAxis uom="urn:ogc:def:uom:EPSG::9001" gml:id="VoyagerAxisDown">
+                  <gml:identifier codeSpace="TB18-D025">VoyagerAxisDown</gml:identifier>
+                  <gml:name>Downward</gml:name>
+                  <gml:axisAbbrev>z</gml:axisAbbrev>
+                  <gml:axisDirection codeSpace="OGC">down</gml:axisDirection> <!-- Not well defined in this example. -->
+                </gml:CoordinateSystemAxis>
+              </gml:axis>
+            </gml:CartesianCS>
+          </gml:cartesianCS>
+          <gml:engineeringDatum>
+            <gml:EngineeringDatum gml:id="CenterOfMass">
+              <gml:identifier codeSpace="TB18-D025">VoyagerFrame</gml:identifier>
+              <gml:name>Voyager spacecraft frame</gml:name>
+              <gml:scope>Example.</gml:scope>
+              <gml:anchorDefinition>Spacecraft centre of gravity</gml:anchorDefinition>
+            </gml:EngineeringDatum>
+          </gml:engineeringDatum>
+        </gml:EngineeringCRS>
+      </gml:componentReferenceSystem>
+      <gml:componentReferenceSystem>
+        <!--
+          This TemporalCRS will be reused in all CompoundCRS declared in this file.
+          This construct assumes that time is independent from spatial dimensions,
+          i.e. that we can ignore Einstein's relativity. If it is not the case,
+          we would need a CRS associated to a 4-dimensional MinkowskiCS instead.
+        -->
+        <gml:TemporalCRS gml:id="TimeCRS">
+          <gml:identifier codeSpace="TB18-D025">TimeCRS</gml:identifier>
+          <gml:name>Truncated Julian days</gml:name>
+          <gml:scope>Example.</gml:scope>
+          <gml:timeCS>
+            <gml:TimeCS gml:id="TimeCS">
+              <gml:identifier codeSpace="TB18-D025">TimeCS</gml:identifier>
+              <gml:name>Days</gml:name>
+              <gml:axis>
+                <gml:CoordinateSystemAxis uom="day" gml:id="TimeAxis">      <!-- Not a standard way to declare UoM. -->
+                  <gml:identifier codeSpace="TB18-D025">TimeAxis</gml:identifier>
+                  <gml:name>Time</gml:name>
+                  <gml:axisAbbrev>t</gml:axisAbbrev>
+                  <gml:axisDirection codeSpace="ISO">future</gml:axisDirection>
+                </gml:CoordinateSystemAxis>
+              </gml:axis>
+            </gml:TimeCS>
+          </gml:timeCS>
+          <gml:temporalDatum>
+            <gml:TemporalDatum gml:id="JulianEpoch">
+              <gml:identifier codeSpace="TB18-D025">JulianEpoch</gml:identifier>
+              <gml:name>Truncated Julian epoch</gml:name>
+              <gml:scope>Example.</gml:scope>
+              <gml:origin>1968-05-24T00:00:00Z</gml:origin>
+            </gml:TemporalDatum>
+          </gml:temporalDatum>
+        </gml:TemporalCRS>
+      </gml:componentReferenceSystem>
+    </gml:CompoundCRS>
+  </gml:sourceCRS>
+  <!--
+    The target of this transformation is the platform of an hypothetical observatory.
+    That platform uses Cartesian coordinate system on a plane tangent to Earth surface.
+    It is defined as a CRS derived from WGS84 geographic CRS using an operation method
+    defined by EPSG, namely "Geographic/topocentric conversions" (method EPSG::9837).
+  -->
+  <gml:targetCRS>
+    <gml:CompoundCRS gml:id="PlatformAndTimeCRS">
+      <gml:identifier codeSpace="TB18-D025">PlatformAndTimeCRS</gml:identifier>
+      <gml:name>Platform CRS + time</gml:name>
+      <gml:scope>Example.</gml:scope>
+      <gml:componentReferenceSystem>
+        <gml:DerivedCRS gml:id="ObservatoryPlatformCRS">
+          <gml:identifier codeSpace="TB18-D025">ObservatoryPlatformCRS</gml:identifier>
+          <gml:name>Local Tangent Plane - East North Up (LTP-ENU)</gml:name>
+          <gml:scope>Example.</gml:scope>
+          <gml:conversion>
+            <gml:Conversion gml:id="WGS84_to_LP">
+              <gml:identifier codeSpace="TB18-D025">WorldToPlatform</gml:identifier>
+              <gml:name>WGS84 to LTP-ENU</gml:name>
+              <gml:scope>Example.</gml:scope>
+              <!--
+                The following block contains a description of all parameters, without the values.
+                This description could be replaced by a xlink to a XML document on EPSG registry,
+                but we provide full description in this file for making this example standalone.
+                The actual parameter values are given in separated elements after <gml:method>.
+              -->
+              <gml:method>
+                <gml:OperationMethod gml:id="ECEF_to_LP">
+                  <gml:identifier codeSpace="IOGP">urn:ogc:def:method:EPSG::9837</gml:identifier>
+                  <gml:name codeSpace="EPSG">Geographic/topocentric conversions</gml:name>
+                  <gml:formula>See IOGP Guidance Note #7-2.</gml:formula>
+                  <gml:sourceDimensions>3</gml:sourceDimensions>
+                  <gml:targetDimensions>3</gml:targetDimensions>
+                  <gml:parameter>
+                    <gml:OperationParameter gml:id="epsg-parameter-8834">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:parameter:EPSG::8834</gml:identifier>
+                      <gml:name>Latitude of topocentric origin</gml:name>
+                    </gml:OperationParameter>
+                  </gml:parameter>
+                  <gml:parameter>
+                    <gml:OperationParameter gml:id="epsg-parameter-8835">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:parameter:EPSG::8835</gml:identifier>
+                      <gml:name>Longitude of topocentric origin</gml:name>
+                    </gml:OperationParameter>
+                  </gml:parameter>
+                  <gml:parameter>
+                    <gml:OperationParameter gml:id="epsg-parameter-8836">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:parameter:EPSG::8836</gml:identifier>
+                      <gml:name>Ellipsoidal height of topocentric origin</gml:name>
+                    </gml:OperationParameter>
+                  </gml:parameter>
+                </gml:OperationMethod>
+              </gml:method>
+              <!--
+                This is where the parameter values for the conversion from ECEF to local tangent plane are provided.
+                Note the use of xlink: without them, we would have to repeat above descriptions inside the following
+                <gml:operationParameter> elements.
+              -->
+              <gml:parameterValue>
+                <gml:ParameterValue>
+                  <gml:value uom="urn:ogc:def:uom:EPSG::9102">28.583333</gml:value>
+                  <gml:operationParameter xlink:href="#epsg-parameter-8834"/> <!-- Latitude of topocentric origin -->
+                </gml:ParameterValue>
+              </gml:parameterValue>
+              <gml:parameterValue>
+                <gml:ParameterValue>
+                  <gml:value uom="urn:ogc:def:uom:EPSG::9102">-80.583056</gml:value>
+                  <gml:operationParameter xlink:href="#epsg-parameter-8835"/> <!-- Longitude of topocentric origin -->
+                </gml:ParameterValue>
+              </gml:parameterValue>
+              <gml:parameterValue>
+                <gml:ParameterValue>
+                  <gml:value uom="urn:ogc:def:uom:EPSG::9001">100</gml:value>
+                  <gml:operationParameter xlink:href="#epsg-parameter-8836"/> <!-- Ellipsoidal height of topocentric origin -->
+                </gml:ParameterValue>
+              </gml:parameterValue>
+            </gml:Conversion>
+          </gml:conversion>
+          <!--
+            The following block contains the Coordinate Reference System (CRS) associated to the observatory platform.
+            In this example we copy the full definition, but a link to EPSG registry could also be used like below:
+
+            <gml:baseCRS xlink:href="https://epsg.org/api/v1/CoordRefSystem/4979/export?format=gml"/>
+          -->
+          <gml:baseCRS>
+            <gml:GeodeticCRS gml:id="epsg-crs-4979">
+              <gml:identifier codeSpace="IOGP">urn:ogc:def:crs:EPSG::4979</gml:identifier>
+              <gml:name codeSpace="EPSG">WGS 84</gml:name>
+              <gml:scope>Used by the GPS satellite navigation system.</gml:scope>
+              <gml:ellipsoidalCS>
+                <gml:EllipsoidalCS gml:id="epsg-cs-6423">
+                  <gml:identifier codeSpace="IOGP">urn:ogc:def:cs:EPSG::6423</gml:identifier>
+                  <gml:name>Ellipsoidal 3D CS.</gml:name>
+                  <gml:axis>
+                    <gml:CoordinateSystemAxis gml:id="epsg-axis-106" uom="urn:ogc:def:uom:EPSG::9122">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:axis:EPSG::106</gml:identifier>
+                      <gml:name>Geodetic latitude</gml:name>
+                      <gml:axisAbbrev>φ</gml:axisAbbrev>
+                      <gml:axisDirection codeSpace="ISO">north</gml:axisDirection>
+                    </gml:CoordinateSystemAxis>
+                  </gml:axis>
+                  <gml:axis>
+                    <gml:CoordinateSystemAxis gml:id="epsg-axis-107" uom="urn:ogc:def:uom:EPSG::9122">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:axis:EPSG::107</gml:identifier>
+                      <gml:name>Geodetic longitude</gml:name>
+                      <gml:axisAbbrev>λ</gml:axisAbbrev>
+                      <gml:axisDirection codeSpace="ISO">east</gml:axisDirection>
+                    </gml:CoordinateSystemAxis>
+                  </gml:axis>
+                  <gml:axis>
+                    <gml:CoordinateSystemAxis gml:id="epsg-axis-110" uom="urn:ogc:def:uom:EPSG::9001">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:axis:EPSG::110</gml:identifier>
+                      <gml:name>Ellipsoidal height</gml:name>
+                      <gml:axisAbbrev>h</gml:axisAbbrev>
+                      <gml:axisDirection codeSpace="ISO">up</gml:axisDirection>
+                    </gml:CoordinateSystemAxis>
+                  </gml:axis>
+                </gml:EllipsoidalCS>
+              </gml:ellipsoidalCS>
+              <gml:geodeticDatum>
+                <gml:GeodeticDatum gml:id="epsg-datum-6326">
+                  <gml:identifier codeSpace="IOGP">urn:ogc:def:datum:EPSG::6326</gml:identifier>
+                  <gml:name>World Geodetic System 1984</gml:name>
+                  <gml:scope>Satellite navigation.</gml:scope>
+                  <gml:primeMeridian>
+                    <gml:PrimeMeridian gml:id = "epsg-meridian-8901">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:meridian:EPSG::8901</gml:identifier>
+                      <gml:name>Greenwich</gml:name>
+                      <gml:greenwichLongitude uom="urn:ogc:def:uom:EPSG::9102">0</gml:greenwichLongitude>
+                    </gml:PrimeMeridian>
+                  </gml:primeMeridian>
+                  <gml:ellipsoid>
+                    <gml:Ellipsoid gml:id = "epsg-ellipsoid-7030">
+                      <gml:identifier codeSpace="IOGP">urn:ogc:def:ellipsoid:EPSG::7030</gml:identifier>
+                      <gml:name>WGS 84</gml:name>
+                      <gml:semiMajorAxis uom="urn:ogc:def:uom:EPSG::9001">6378137.0</gml:semiMajorAxis>
+                      <gml:secondDefiningParameter>
+                        <gml:SecondDefiningParameter>
+                          <gml:inverseFlattening uom="urn:ogc:def:uom:EPSG::9201">298.257223563</gml:inverseFlattening>
+                        </gml:SecondDefiningParameter>
+                      </gml:secondDefiningParameter>
+                    </gml:Ellipsoid>
+                  </gml:ellipsoid>
+                </gml:GeodeticDatum>
+              </gml:geodeticDatum>
+            </gml:GeodeticCRS>
+          </gml:baseCRS>
+          <!--
+            The following block defines the axes of the observatory platform as a Cartesian coordinate system.
+            The platform origin is located at 28.583333°N, 80.583056°W and 100 meters above ellipsoid.
+            Those values are specified in the <gml:conversion> block above.
+          -->
+          <gml:derivedCRSType codeSpace="EPSG">engineering</gml:derivedCRSType>
+          <gml:coordinateSystem>
+            <gml:CartesianCS gml:id="ObservatoryPlatformCS">
+              <gml:identifier codeSpace="TB18-D025">ObservatoryPlatformCS</gml:identifier>
+              <gml:name>Topocentric easting and northing</gml:name>
+              <gml:axis>
+                <gml:CoordinateSystemAxis uom="urn:ogc:def:uom:EPSG::9001" gml:id="PlatformAxisEast">
+                  <gml:identifier codeSpace="TB18-D025">PlatformAxisEast</gml:identifier>
+                  <gml:name>Topocentric East</gml:name>
+                  <gml:axisAbbrev>U</gml:axisAbbrev>
+                  <gml:axisDirection codeSpace="ISO">east</gml:axisDirection>
+                </gml:CoordinateSystemAxis>
+              </gml:axis>
+              <gml:axis>
+                <gml:CoordinateSystemAxis uom="urn:ogc:def:uom:EPSG::9001" gml:id="PlatformAxisNorth">
+                  <gml:identifier codeSpace="TB18-D025">PlatformAxisNorth</gml:identifier>
+                  <gml:name>Topocentric North</gml:name>
+                  <gml:axisAbbrev>V</gml:axisAbbrev>
+                  <gml:axisDirection codeSpace="ISO">north</gml:axisDirection>
+                </gml:CoordinateSystemAxis>
+              </gml:axis>
+              <gml:axis>
+                <gml:CoordinateSystemAxis uom="urn:ogc:def:uom:EPSG::9001" gml:id="PlatformAxisHeight">
+                  <gml:identifier codeSpace="TB18-D025">PlatformAxisHeight</gml:identifier>
+                  <gml:name>Topocentric height</gml:name>
+                  <gml:axisAbbrev>W</gml:axisAbbrev>
+                  <gml:axisDirection codeSpace="ISO">up</gml:axisDirection>
+                </gml:CoordinateSystemAxis>
+              </gml:axis>
+            </gml:CartesianCS>
+          </gml:coordinateSystem>
+        </gml:DerivedCRS>
+      </gml:componentReferenceSystem>
+      <gml:componentReferenceSystem xlink:href="#TimeCRS"/>
+    </gml:CompoundCRS>
+  </gml:targetCRS>
+  <!--
+    Above source and target CRS are global to the full chain of transformations, from Voyager to observatory.
+    The remaining of this file will provide detail for each step represented by arrows in the following line:
+
+        Voyager → Geographic → Observatory platform
+
+    Note: the TestBed 18 engineering report D025 uses a slightly more realistic chain of operations as below:
+
+        Voyager → Heliocentric → Earth-Centered Inertial → Geocentric → Geographic → Observatory platform
+
+    However the TB18 chain requires the definition of `InertialCRS`, which does not exist in ISO 19111:2019.
+    For keeping this tutorial simpler, this file combines the first steps in a single "Voyager → Geographic"
+    hypothetical step.
+
+    The first and last CRS use Cartesian CS, all other CRS use spherical or ellipsoidal CS.
+    Source and target CRS are repeated (the target of each step is the source of next step),
+    but we will use `xlink` for avoiding to duplicate the full definitions.
+  -->
+  <gml:coordOperation>
+    <gml:Transformation gml:id="VoyagerToGeographic">
+      <gml:identifier codeSpace="TB18-D025">VoyagerToGeographic</gml:identifier>
+      <gml:name>Voyager spacecraft to geographic CRS</gml:name>
+      <gml:scope>Example.</gml:scope>
+      <gml:operationVersion>1</gml:operationVersion>
+      <gml:sourceCRS xlink:href="#VoyagerAndTimeCRS"/>
+      <gml:targetCRS>
+        <gml:CompoundCRS gml:id="GeographicAndTimeCRS">
+          <gml:identifier codeSpace="TB18-D025">GeographicAndTimeCRS</gml:identifier>
+          <gml:name>WGS84 + time</gml:name>
+          <gml:scope>Example.</gml:scope>
+          <gml:componentReferenceSystem xlink:href="#epsg-crs-4979"/>
+          <gml:componentReferenceSystem xlink:href="#TimeCRS"/>
+        </gml:CompoundCRS>
+      </gml:targetCRS>
+      <!--
+        The following block defines the coordinate transformation from the Voyager CRS to geographic CRS.
+        The structure is similar to the one for <gml:DerivedCRS> definition: first describe the parameters,
+        then provide parameter values. In this example, we assume that this coordinate transformation is so
+        complex that it cannot be described with a few parameters. Instead, spacecraft trajectory relative
+        to ECEF is stored in a file. This example uses "Moving Feature CSV encoding" as the file format.
+      -->
+      <gml:method>
+        <gml:OperationMethod gml:id="TrajectoryToECEF">
+          <gml:identifier codeSpace="TB18-D025">TrajectoryToECEF</gml:identifier>
+          <gml:name>Trajectory to Earth Centered Earth Fixed (ECEF)</gml:name>
+          <gml:formula>Use trajectory coordinates from Moving Feature CSV file.</gml:formula>
+          <gml:sourceDimensions>4</gml:sourceDimensions>
+          <gml:targetDimensions>4</gml:targetDimensions>
+          <gml:parameter>
+            <gml:OperationParameter gml:id="TrajectoryFile">
+              <gml:identifier codeSpace="TB18-D025">TrajectoryFile</gml:identifier>
+              <gml:name>Feature trajectory file</gml:name>
+            </gml:OperationParameter>
+          </gml:parameter>
+        </gml:OperationMethod>
+      </gml:method>
+      <gml:parameterValue>
+        <gml:ParameterValue>
+          <gml:valueFile>VoyagerTrajectory.csv</gml:valueFile>
+          <gml:operationParameter xlink:href="#TrajectoryFile"/>
+        </gml:ParameterValue>
+      </gml:parameterValue>
+    </gml:Transformation>
+  </gml:coordOperation>
+  <!--
+    At this point, coordinates have been transformed to EPSG:4979 with a time axis.
+    The final step is to convert to the tangent plane. Use a pass-through operation.
+    We also reuse the operation method and parameters defined above.
+  -->
+  <gml:coordOperation>
+    <gml:PassThroughOperation gml:id="GeographicToPlatform4D">
+      <gml:identifier codeSpace="TB18-D025">GeographicToPlatform4D</gml:identifier>
+      <gml:name>Geographic to observatory platform with time</gml:name>
+      <gml:scope>Example.</gml:scope>
+      <gml:sourceCRS xlink:href="#GeographicAndTimeCRS"/>
+      <gml:targetCRS xlink:href="#PlatformAndTimeCRS"/>
+      <gml:modifiedCoordinate>1</gml:modifiedCoordinate>  <!-- Index values start at 1. -->
+      <gml:modifiedCoordinate>2</gml:modifiedCoordinate>
+      <gml:modifiedCoordinate>3</gml:modifiedCoordinate>
+      <gml:coordOperation xlink:href="#WGS84_to_LP"/>
+    </gml:PassThroughOperation>
+  </gml:coordOperation>
+</gml:ConcatenatedOperation>
