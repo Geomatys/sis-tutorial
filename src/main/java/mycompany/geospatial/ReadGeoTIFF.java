@@ -3,6 +3,9 @@ package mycompany.geospatial;
 import java.io.File;
 import java.util.Collection;
 import java.awt.image.ImagingOpException;
+import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.FactoryException;
+
 import org.apache.sis.storage.Resource;
 import org.apache.sis.storage.Aggregate;
 import org.apache.sis.storage.DataStore;
@@ -10,10 +13,9 @@ import org.apache.sis.storage.DataStores;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.GridCoverageResource;
 import org.apache.sis.coverage.grid.GridCoverage;
-import org.apache.sis.coverage.grid.GridGeometry;
-import org.apache.sis.coverage.grid.GridOrientation;
-import org.apache.sis.geometry.GeneralEnvelope;
-import org.apache.sis.referencing.CommonCRS;
+import org.apache.sis.coverage.grid.GridCoverageProcessor;
+import org.apache.sis.image.Interpolation;
+import org.apache.sis.referencing.CRS;
 
 public class ReadGeoTIFF {
     /**
@@ -22,8 +24,10 @@ public class ReadGeoTIFF {
      * @param  args  ignored.
      * @throws DataStoreException if an error occurred while reading the raster.
      * @throws ImagingOpException unchecked exception thrown if an error occurred while loading a tile.
+     * @throws FactoryException   if an error occurred while creating the Coordinate Reference System (CRS).
+     * @throws TransformException if an error occurred while transforming coordinates to the target CRS.
      */
-    public static void main(String[] args) throws DataStoreException {
+    public static void main(String[] args) throws DataStoreException, FactoryException, TransformException {
         GridCoverage data;
         try (DataStore store = DataStores.open(new File("Aéroport.tiff"))) {
             /*
@@ -38,23 +42,19 @@ public class ReadGeoTIFF {
              */
             data = firstImage.read(null, null);
             System.out.printf("Information about the selected image:%n%s%n", data);
-            /*
-             * Read only a subset of the resource. The Area Of Interest can be specified
-             * in any Coordinate Reference System (CRS). The envelope will be transformed
-             * automatically to the CRS of the data (the data are not transformed).
-             * This example uses Universal Transverse Mercator (UTM) zone 31 North.
-             */
-            var areaOfInterest = new GeneralEnvelope(CommonCRS.WGS84.universal(49, 2.5));
-            areaOfInterest.setRange(0,   46600,  467000);       // Minimal and maximal easting values (metres)
-            areaOfInterest.setRange(1, 5427000, 5428000);       // Minimal and maximal northing values (metres).
-            data = firstImage.read(new GridGeometry(null, areaOfInterest, GridOrientation.HOMOTHETY), null);
-            System.out.printf("Information about the resource subset:%n%s%n",
-                              data.getGridGeometry().getExtent());
         }
         /*
          * By default, it is possible to continue to use the `GridCoverage` (but not the `Resource`) after
          * the `DataStore` has been closed because data are in memory. Note that it would not be the case
          * if deferred data loading was enabled has shown in "Handle rasters bigger than memory" example.
+         *
+         * Reproject to "WGS 84 / World Mercator" (EPSG::3395) using bilinear interpolation.
+         * This example lets Apache SIS choose the output grid size and resolution.
+         * But it is possible to specify those aspects if desired.
          */
+        var processor = new GridCoverageProcessor();
+        processor.setInterpolation(Interpolation.BILINEAR);
+        data = processor.resample(data, CRS.forCode("EPSG::3395"));
+        System.out.printf("Information about the image after reprojection:%n%s%n", data.getGridGeometry());
     }
 }
